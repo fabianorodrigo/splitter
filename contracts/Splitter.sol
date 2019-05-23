@@ -1,27 +1,20 @@
 pragma solidity 0.5.8;
 
-import  {SafeMath } from './SafeMath.sol';
+import { SafeMath } from './SafeMath.sol';
 
 contract Splitter {
 
-    /*there are 3 people: Alice, Bob and Carol.
-    
-    we can see the balances of Alice, Bob and Carol on the Web page.
-    Alice can use the Web page to split her ether.
-    */
-
     // State variables
 
-    // Splitter contract balance
-    uint public splitterBalance;
     // balance of alice, bob & carol
-    mapping (address => uint) balanceOf;
-    // define parties
+    mapping (address => uint) public balanceOf;
+
+    // Get Alice address
     address public alice;
-    address public bob;
-    address public carol;
-    // Set owner of contract
-    address owner;
+    // Get Bobs Balance
+    address payable public bob;
+    // Get Carols Balance
+    address payable public carol;
 
     // Modifiers
     modifier isAlice() {
@@ -29,23 +22,82 @@ contract Splitter {
         _;
     }
     
-    // Constructor setting contract owner
-    constructor (address firstAlice) public {
-        owner = msg.sender;
-        alice = firstAlice;
+    modifier isBobOrCarol() {
+        require(msg.sender == bob || msg.sender == carol, "you cannot call this function");
+        _;
+    }
+    
+    modifier sufficientBalance() {
+        require(balanceOf[msg.sender] > 0, "not enough balance");
+        _;
+    }
+    
+    // Constructor setting addresses & balances of Alice, Bobs address & Carols address
+    constructor(address payable bobAddress, address payable carolAddress) public {
+        alice = msg.sender;
+        bob = bobAddress;
+        balanceOf[bob] = 0;
+        carol = carolAddress;
+        balanceOf[carol] = 0;
     }
 
+    // Getter Functions
+    
+    // Get contracts Balance
+    function getContractBalance()
+        public
+        view
+        returns (uint contractBalance)
+    {
+        return address(this).balance;
+    }
+    
+    /*
+    
+    function getAliceBalance()
+        public
+        view
+        returns (uint aliceBalance)
+    {
+        return alice.balance;
+    }
+    */
+    
+    // Setter Functions
+
     // whenever Alice sends ether to the contract for it to be split, half of it goes to Bob and the other half to Carol.
-    function splitEther(uint amount) 
+    function splitEther() 
         public
         isAlice
         payable 
-        returns (bool splitted) 
     {       
-        // Divide amount by 2 using Safe Math
-        bob.transfer(SafeMath.div(amount, 2));
-        carol.transfer(SafeMath.div(amount, 2));
-        return true;
+        // send money to contract
+        // Update balance of Bob and Carol in contract
+        balanceOf[bob] += SafeMath.div(msg.value, 2);
+        balanceOf[carol] += SafeMath.div(msg.value, 2);
     }
-    // Functions
+    
+    // Withdrawing funds to bobs or alices address
+    function withdraw() 
+        public
+        isBobOrCarol
+        sufficientBalance
+        returns (bool success)
+    {
+        if (msg.sender == bob) 
+        {
+            bob.transfer(balanceOf[bob]);
+            balanceOf[bob] = 0;
+            return true;
+        } 
+        else if (msg.sender == carol) 
+        {
+            carol.transfer(balanceOf[carol]);
+            balanceOf[carol] = 0;
+            return true;
+        }
+        else {
+            revert("Withdraw failed");
+        }
+    }
 }
