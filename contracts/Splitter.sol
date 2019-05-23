@@ -71,7 +71,7 @@ contract Splitter {
         isAlice
         payable 
     {       
-        // send money to contract
+        // check if Alice
         // Update balance of Bob and Carol in contract
         balanceOf[bob] += SafeMath.div(msg.value, 2);
         balanceOf[carol] += SafeMath.div(msg.value, 2);
@@ -100,4 +100,5 @@ contract Splitter {
             revert("Withdraw failed");
         }
     }
+    
 }
