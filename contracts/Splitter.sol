@@ -1,4 +1,6 @@
-pragma solidity 0.5.6;
+pragma solidity 0.5.8;
+
+import  {SafeMath } from './SafeMath.sol';
 
 contract Splitter {
 
@@ -7,6 +9,7 @@ contract Splitter {
     we can see the balances of Alice, Bob and Carol on the Web page.
     Alice can use the Web page to split her ether.
     */
+
     // State variables
 
     // Splitter contract balance
@@ -15,8 +18,8 @@ contract Splitter {
     mapping (address => uint) balanceOf;
     // define parties
     address public alice;
-    address payable public bob;
-    address payable public carol;
+    address public bob;
+    address public carol;
     // Set owner of contract
     address owner;
 
@@ -37,19 +40,12 @@ contract Splitter {
         public
         isAlice
         payable 
-    returns (bool splitted) 
-    {
-        
-        // NOT SECURE needs to be safeMath
-        bob.transfer(amount / 2);
-        carol.transfer(amount / 2);
+        returns (bool splitted) 
+    {       
+        // Divide amount by 2 using Safe Math
+        bob.transfer(SafeMath.div(amount, 2));
+        carol.transfer(SafeMath.div(amount, 2));
         return true;
     }
-
-
-    
-
-    
-
     // Functions
 }
