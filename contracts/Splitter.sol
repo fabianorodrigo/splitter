@@ -15,20 +15,36 @@ contract Splitter {
     address payable public bob;
     // Get Carols Balance
     address payable public carol;
+    // Remainder balance for updating potential claims for carol and bob
+    uint remainder;
+
+    // Events
+    // Show that either Carol or Bob can claim the accumulated remainder for both of them
+    event LogRemainderClaimable(uint indexed remainder, bool indexed claimable);
 
     // Modifiers
     modifier isAlice() {
-        require(alice == msg.sender);
+        require(alice == msg.sender, "not owner");
         _;
     }
     
     modifier isBobOrCarol() {
-        require(msg.sender == bob || msg.sender == carol, "you cannot call this function");
+        require(msg.sender == bob || msg.sender == carol, "You don't have the necessary permission to call this function");
         _;
     }
     
     modifier sufficientBalance() {
-        require(balanceOf[msg.sender] > 0, "not enough balance");
+        require(balanceOf[msg.sender] > 0, "Your balance is 0");
+        _;
+    }
+    
+    modifier remainderCheck() {
+        require(remainder > 0 && SafeMath.mod(remainder, 2) == 0, "No remainder claimable");
+        _;
+    }
+    
+    modifier nonZero() {
+        require(msg.value > 0, "You cannot send a transaction with value equal to 0");
         _;
     }
     
@@ -69,12 +85,21 @@ contract Splitter {
     function splitEther() 
         public
         isAlice
-        payable 
+        payable
+        nonZero
     {       
-        // check if Alice
         // Update balance of Bob and Carol in contract
-        balanceOf[bob] += SafeMath.div(msg.value, 2);
-        balanceOf[carol] += SafeMath.div(msg.value, 2);
+        uint payout = SafeMath.div(msg.value, 2);
+        
+        // Check if remainer exists, if yes update remainder
+        if (msg.value > payout * 2) {
+            remainder += msg.value - (payout * 2);
+            // If remainder is divisible by two, trigger event that remainder exists & is claimable
+            if (SafeMath.mod(remainder, 2) == 0) { emit LogRemainderClaimable(remainder, true); }
+            
+        }
+        balanceOf[bob] += payout;
+        balanceOf[carol] += payout;
     }
     
     // Withdrawing funds to bobs or alices address
@@ -101,4 +126,21 @@ contract Splitter {
         }
     }
     
+    // Can be called by either Bob or Carol
+    function claimRemainder() 
+        public
+        isBobOrCarol
+        remainderCheck
+        returns (bool success)
+    {
+        // Split existing remainder in two
+        uint evenPayout = SafeMath.div(remainder, 2);
+        // Set remainder to 0;
+        remainder = 0;
+        // update carols and bobs balance
+        balanceOf[carol] += evenPayout;
+        balanceOf[bob] += evenPayout;
+        // Return true to signal successful update
+        return true;
+    }
 }
