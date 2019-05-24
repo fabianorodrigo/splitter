@@ -18,7 +18,8 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "signature": "0x70a08231"
     },
     {
       "constant": true,
@@ -32,7 +33,8 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "signature": "0x8b930f15"
     },
     {
       "constant": true,
@@ -46,7 +48,8 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "signature": "0xc09cec77"
     },
     {
       "constant": true,
@@ -60,7 +63,8 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "signature": "0xfb47e3a2"
     },
     {
       "inputs": [
@@ -75,7 +79,8 @@
       ],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "constructor"
+      "type": "constructor",
+      "signature": "constructor"
     },
     {
       "anonymous": false,
@@ -92,7 +97,8 @@
         }
       ],
       "name": "LogRemainderClaimable",
-      "type": "event"
+      "type": "event",
+      "signature": "0x83a30f2d73036bef73a6adec404afcd017c498e12a7b7f7e31eb7097d2f411f8"
     },
     {
       "constant": true,
@@ -106,7 +112,8 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "signature": "0x6f9fb98a"
     },
     {
       "constant": false,
@@ -115,7 +122,8 @@
       "outputs": [],
       "payable": true,
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "signature": "0x502b31d2"
     },
     {
       "constant": false,
@@ -129,7 +137,8 @@
       ],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function"
+      "type": "function",
+      "signature": "0x3ccfd60b"
     },
     {
       "constant": false,
@@ -143,7 +152,8 @@
       ],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function"
+      "type": "function",
+      "signature": "0x212abe5b"
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.5.0+commit.1d4f565a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[],\"name\":\"claimRemainder\",\"outputs\":[{\"name\":\"success\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"withdraw\",\"outputs\":[{\"name\":\"success\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"splitEther\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getContractBalance\",\"outputs\":[{\"name\":\"contractBalance\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"carol\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"bob\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"alice\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"bobAddress\",\"type\":\"address\"},{\"name\":\"carolAddress\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"remainder\",\"type\":\"uint256\"},{\"indexed\":true,\"name\":\"claimable\",\"type\":\"bool\"}],\"name\":\"LogRemainderClaimable\",\"type\":\"event\"}],\"devdoc\":{\"author\":\"hilmarx\",\"details\":\"This is a test version, please don't use in production\",\"methods\":{\"claimRemainder()\":{\"details\":\"Enable Carol or Bob to add the ether stored in the 'remainder' state variable to be added equally to their contract balancesOnly callable if remainder is equally divisible by 2\"},\"splitEther()\":{\"details\":\"Split ether sent by Alice into two equal pices and add them to Carols and Bobs inherent balance, equally.If ether amount cannot be divided by two, store remainder in the 'remainder' state variableIf the ether stored in the remainder state variable is again divisible by 2, emit an event\"},\"withdraw()\":{\"details\":\"Enable Bob & Carol to withdraw the value of their contracts balance\"}},\"title\":\"Splitter - Split payments to two parties 50/50\"},\"userdoc\":{\"methods\":{},\"notice\":\"You can use this contract to split up payments equally among two pre-defined parties\"}},\"settings\":{\"compilationTarget\":{\"/Users/Hilmar/code/tutorials/b9lab/splitter/contracts/Splitter.sol\":\"Splitter\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/Hilmar/code/tutorials/b9lab/splitter/contracts/SafeMath.sol\":{\"keccak256\":\"0x95d454b1dd1a8babb2fb768b282054499ae856c20eb7513c5b10bfdee8e64347\",\"urls\":[\"bzzr://264399a97e4edff9157537b70e352f73ab904b1e94a31639e9d5ba3e666f7433\"]},\"/Users/Hilmar/code/tutorials/b9lab/splitter/contracts/Splitter.sol\":{\"keccak256\":\"0xb0868bde45b19b6326afb12a465d8de533393b66160a35f3cf07aceefadb516e\",\"urls\":[\"bzzr://db19c16326ee27157a2533e10bd39a2a74a9d29e8062d1229b23fe1c6e121038\"]}},\"version\":1}",
@@ -7777,9 +7787,16 @@
     "name": "solc",
     "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "5777": {
+      "events": {},
+      "links": {},
+      "address": "0x848A5D25eD37Fd3b64beB1b4D2cE316a6d66150a",
+      "transactionHash": "0x8ddd251c117387f9b8466dbdb1561ec3a2f2fc48b3421b804803bee6f9f4c289"
+    }
+  },
   "schemaVersion": "3.0.8",
-  "updatedAt": "2019-05-24T15:11:03.210Z",
+  "updatedAt": "2019-05-24T15:21:14.221Z",
   "devdoc": {
     "author": "hilmarx",
     "details": "This is a test version, please don't use in production",
