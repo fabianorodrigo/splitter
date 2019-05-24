@@ -2,6 +2,12 @@ pragma solidity 0.5.8;
 
 import { SafeMath } from './SafeMath.sol';
 
+
+/// @title Splitter - Split payments to two parties 50/50
+/// @author hilmarx
+/// @notice You can use this contract to split up payments equally among two pre-defined parties
+/// @dev This is a test version, please don't use in production
+
 contract Splitter {
 
     // State variables
@@ -23,32 +29,37 @@ contract Splitter {
     event LogRemainderClaimable(uint indexed remainder, bool indexed claimable);
 
     // Modifiers
+    ///@dev Check if message sender is Alice
     modifier isAlice() {
         require(alice == msg.sender, "not owner");
         _;
     }
     
+    ///@dev Check if message sender is either Bob or Carol
     modifier isBobOrCarol() {
         require(msg.sender == bob || msg.sender == carol, "You don't have the necessary permission to call this function");
         _;
     }
     
+    ///@dev Check if message sender (Bob or Carol) have any balance which can be withdrawn
     modifier sufficientBalance() {
         require(balanceOf[msg.sender] > 0, "Your balance is 0");
         _;
     }
     
+    ///@dev Check if the contract instance 1) has any remainder and 2) if it is divisible by 2, ie. claimable by Carol or Bob
     modifier remainderCheck() {
         require(remainder > 0 && SafeMath.mod(remainder, 2) == 0, "No remainder claimable");
         _;
     }
     
+    ///@dev Check that Alice is not sending a message with value 0 to a payable method
     modifier nonZero() {
         require(msg.value > 0, "You cannot send a transaction with value equal to 0");
         _;
     }
     
-    // Constructor setting addresses & balances of Alice, Bobs address & Carols address
+    //@dev Constructor setting addresses & balances of Alice, Bob & Carol, where alice is the owner
     constructor(address payable bobAddress, address payable carolAddress) public {
         alice = msg.sender;
         bob = bobAddress;
@@ -59,7 +70,7 @@ contract Splitter {
 
     // Getter Functions
     
-    // Get contracts Balance
+    // @dev Return the ether balance of the contract instance
     function getContractBalance()
         public
         view
@@ -69,7 +80,7 @@ contract Splitter {
     }
     
     /*
-    
+    ///@dev Get alice ether balance
     function getAliceBalance()
         public
         view
@@ -81,16 +92,16 @@ contract Splitter {
     
     // Setter Functions
 
-    // whenever Alice sends ether to the contract for it to be split, half of it goes to Bob and the other half to Carol.
+    ///@dev Split ether sent by Alice into two equal pices and add them to Carols and Bobs inherent balance, equally.
+    ///@dev If ether amount cannot be divided by two, store remainder in the 'remainder' state variable
+    ///@dev If the ether stored in the remainder state variable is again divisible by 2, emit an event
     function splitEther() 
         public
         isAlice
         payable
         nonZero
     {       
-        // Update balance of Bob and Carol in contract
         uint payout = SafeMath.div(msg.value, 2);
-        
         // Check if remainer exists, if yes update remainder
         if (msg.value > payout * 2) {
             remainder += msg.value - (payout * 2);
@@ -102,7 +113,7 @@ contract Splitter {
         balanceOf[carol] += payout;
     }
     
-    // Withdrawing funds to bobs or alices address
+    ///@dev Enable Bob & Carol to withdraw the value of their contracts balance
     function withdraw() 
         public
         isBobOrCarol
@@ -126,7 +137,8 @@ contract Splitter {
         }
     }
     
-    // Can be called by either Bob or Carol
+    ///@dev Enable Carol or Bob to add the ether stored in the 'remainder' state variable to be added equally to their contract balances
+    ///@dev Only callable if remainder is equally divisible by 2
     function claimRemainder() 
         public
         isBobOrCarol
