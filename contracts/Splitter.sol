@@ -63,14 +63,15 @@ contract Splitter {
     constructor(address payable bobAddress, address payable carolAddress) public {
         alice = msg.sender;
         bob = bobAddress;
-        balanceOf[bob] = 0;
+        balanceOf[bob];
         carol = carolAddress;
-        balanceOf[carol] = 0;
+        balanceOf[carol];
     }
 
     // Getter Functions
     
     // @dev Return the ether balance of the contract instance
+    // DELETE - ALL BALANCES ARE AVAILABLE EVERYWHERE
     function getContractBalance()
         public
         view
@@ -78,17 +79,6 @@ contract Splitter {
     {
         return address(this).balance;
     }
-    
-    /*
-    ///@dev Get alice ether balance
-    function getAliceBalance()
-        public
-        view
-        returns (uint aliceBalance)
-    {
-        return alice.balance;
-    }
-    */
     
     // Setter Functions
 
