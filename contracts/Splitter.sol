@@ -29,7 +29,7 @@ contract Splitter  {
 
     // Events
     // Show that either Carol or Bob can claim the accumulated remainder for both of them
-    event LogRemainderClaimable(uint indexed remainder, bool indexed claimable);
+    event LogRemainderClaimed(uint indexed remainder, bool indexed claimable);
 
     // Modifiers
     ///@dev Check if message sender is Alice
@@ -47,12 +47,6 @@ contract Splitter  {
     ///@dev Check if message sender (Bob or Carol) have any balance which can be withdrawn
     modifier sufficientBalance() {
         require(balanceOf[msg.sender] > 0, "Your balance is 0");
-        _;
-    }
-    
-    ///@dev Check if the contract instance 1) has any remainder and 2) if it is divisible by 2, ie. claimable by Carol or Bob
-    modifier remainderCheck() {
-        require(remainder > 0 && remainder.mod(2) == 0, "No remainder claimable");
         _;
     }
     
@@ -98,10 +92,20 @@ contract Splitter  {
         // Check if remainer exists, if yes update remainder
         if (msg.value > payout * 2) {
             remainder = remainder.add(msg.value - (payout * 2));
-            // If remainder is divisible by two, trigger event that remainder exists & is claimable
-            if (remainder.mod(2) == 0) { emit LogRemainderClaimable(remainder, true); }
-            
+            // If remainder is greater than 0 & divisible by two, trigger event and update carols and bobs balanceOf
+            if (remainder > 0 && remainder.mod(2) == 0) 
+            {
+                emit LogRemainderClaimed(remainder, true);
+                // Split existing remainder in two
+                uint evenPayout = remainder.div(2);
+                // Set remainder to 0;
+                remainder = 0;
+                // update carols and bobs balance
+                balanceOf[carol] = balanceOf[carol].add(evenPayout);
+                balanceOf[bob] = balanceOf[bob].add(evenPayout);
+            }  
         }
+
         balanceOf[carol] = balanceOf[carol].add(payout);
         balanceOf[bob] = balanceOf[bob].add(payout);
     }
@@ -130,22 +134,4 @@ contract Splitter  {
         }
     }
     
-    ///@dev Enable Carol or Bob to add the ether stored in the 'remainder' state variable to be added equally to their contract balances
-    ///@dev Only callable if remainder is equally divisible by 2
-    function claimRemainder() 
-        public
-        isBobOrCarol
-        remainderCheck
-        returns (bool success)
-    {
-        // Split existing remainder in two
-        uint evenPayout = remainder.div(2);
-        // Set remainder to 0;
-        remainder = 0;
-        // update carols and bobs balance
-        balanceOf[carol] = balanceOf[carol].add(evenPayout);
-        balanceOf[bob] = balanceOf[bob].add(evenPayout);
-        // Return true to signal successful update
-        return true;
-    }
 }
