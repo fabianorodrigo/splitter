@@ -143,8 +143,8 @@ contract Splitter  {
         // Set remainder to 0;
         remainder = 0;
         // update carols and bobs balance
-        balanceOf[carol] += evenPayout;
-        balanceOf[bob] += evenPayout;
+        balanceOf[carol] = balanceOf[carol].add(evenPayout);
+        balanceOf[bob] = balanceOf[bob].add(evenPayout);
         // Return true to signal successful update
         return true;
     }
