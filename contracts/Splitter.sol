@@ -89,7 +89,6 @@ contract Splitter  {
             // If remainder is greater than 0 & divisible by two, trigger event and update carols and bobs balanceOf
             if (remainder > 0 && remainder.mod(2) == 0) 
             {
-                emit LogRemainderClaimed(remainder, true);
                 // Split existing remainder in two
                 uint evenPayout = remainder.div(2);
                 // Set remainder to 0;
@@ -97,6 +96,7 @@ contract Splitter  {
                 // update carols and bobs balance
                 balanceOf[carol] = balanceOf[carol].add(evenPayout);
                 balanceOf[bob] = balanceOf[bob].add(evenPayout);
+                emit LogRemainderClaimed(remainder, true);
             }  
         }
         balanceOf[carol] = balanceOf[carol].add(payout);
