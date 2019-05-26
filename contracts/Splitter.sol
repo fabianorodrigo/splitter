@@ -72,13 +72,13 @@ contract Splitter {
     
     // @dev Return the ether balance of the contract instance
     // DELETE - ALL BALANCES ARE AVAILABLE EVERYWHERE
-    function getContractBalance()
-        public
-        view
-        returns (uint contractBalance)
-    {
-        return address(this).balance;
-    }
+    // function getContractBalance()
+    //     public
+    //     view
+    //     returns (uint contractBalance)
+    // {
+    //     return address(this).balance;
+    // }
     
     // Setter Functions
 
