@@ -28,8 +28,14 @@ contract Splitter  {
     uint remainder;
 
     // Events
-    // Show that either Carol or Bob can claim the accumulated remainder for both of them
+    // Show that the remainder was distributed to the two accounts
     event LogRemainderClaimed(uint indexed remainder, bool indexed claimable);
+
+    // Show that alice sent some Ether to the split function
+    event LogSplit(uint indexed amount);
+
+    // Show that either bob or carol successfully withdrew their balance
+    event LogBalanceWithdrawn(address indexed withdrawer, uint indexed amount);
 
     // Modifiers
     ///@dev Check if message sender is Alice
@@ -65,18 +71,6 @@ contract Splitter  {
         balanceOf[carol];
     }
 
-    // Getter Functions
-    
-    // @dev Return the ether balance of the contract instance
-    // DELETE - ALL BALANCES ARE AVAILABLE EVERYWHERE
-    // function getContractBalance()
-    //     public
-    //     view
-    //     returns (uint contractBalance)
-    // {
-    //     return address(this).balance;
-    // }
-    
     // Setter Functions
 
     ///@dev Split ether sent by Alice into two equal pices and add them to Carols and Bobs inherent balance, equally.
@@ -85,8 +79,8 @@ contract Splitter  {
     function splitEther() 
         public
         isAlice
-        payable
         nonZero
+        payable
     {       
         uint payout = msg.value.div(2);
         // Check if remainer exists, if yes update remainder
@@ -105,9 +99,11 @@ contract Splitter  {
                 balanceOf[bob] = balanceOf[bob].add(evenPayout);
             }  
         }
-
         balanceOf[carol] = balanceOf[carol].add(payout);
         balanceOf[bob] = balanceOf[bob].add(payout);
+
+        // Emit event that ether was succesfully splitted amoung bob & carol
+        emit LogSplit(msg.value);
     }
     
     ///@dev Enable Bob & Carol to withdraw the value of their contracts balance
@@ -120,7 +116,9 @@ contract Splitter  {
         uint withdrawAmount = balanceOf[msg.sender];
         balanceOf[msg.sender] = 0;
         msg.sender.transfer(withdrawAmount);
-        return true;    
+        // emit event that either carol or bob successfully withdrew their balance
+        emit LogBalanceWithdrawn(msg.sender, withdrawAmount);
+        return true;
     }
     
 }
