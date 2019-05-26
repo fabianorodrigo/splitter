@@ -102,8 +102,8 @@ contract Splitter  {
             if (remainder.mod(2) == 0) { emit LogRemainderClaimable(remainder, true); }
             
         }
-        balanceOf[bob] += payout;
-        balanceOf[carol] += payout;
+        balanceOf[carol] = balanceOf[carol].add(payout);
+        balanceOf[bob] = balanceOf[bob].add(payout);
     }
     
     ///@dev Enable Bob & Carol to withdraw the value of their contracts balance
