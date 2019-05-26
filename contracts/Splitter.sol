@@ -115,9 +115,10 @@ contract Splitter  {
     {
         uint withdrawAmount = balanceOf[msg.sender];
         balanceOf[msg.sender] = 0;
-        msg.sender.transfer(withdrawAmount);
         // emit event that either carol or bob successfully withdrew their balance
         emit LogBalanceWithdrawn(msg.sender, withdrawAmount);
+        
+        msg.sender.transfer(withdrawAmount);
         return true;
     }
     
