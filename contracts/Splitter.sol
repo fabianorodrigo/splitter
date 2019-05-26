@@ -1,6 +1,6 @@
 pragma solidity >=0.4.21 <0.6.0;
 
-import { SafeMath } from './SafeMath.sol';
+import './SafeMath.sol';
 
 
 /// @title Splitter - Split payments to two parties 50/50
@@ -8,7 +8,10 @@ import { SafeMath } from './SafeMath.sol';
 /// @notice You can use this contract to split up payments equally among two pre-defined parties
 /// @dev This is a test version, please don't use in production
 
-contract Splitter {
+contract Splitter  {
+
+
+    using SafeMath for uint256;
 
     // State variables
 
@@ -49,7 +52,7 @@ contract Splitter {
     
     ///@dev Check if the contract instance 1) has any remainder and 2) if it is divisible by 2, ie. claimable by Carol or Bob
     modifier remainderCheck() {
-        require(remainder > 0 && SafeMath.mod(remainder, 2) == 0, "No remainder claimable");
+        require(remainder > 0 && remainder.mod(2) == 0, "No remainder claimable");
         _;
     }
     
@@ -91,12 +94,12 @@ contract Splitter {
         payable
         nonZero
     {       
-        uint payout = SafeMath.div(msg.value, 2);
+        uint payout = msg.value.div(2);
         // Check if remainer exists, if yes update remainder
         if (msg.value > payout * 2) {
             remainder += msg.value - (payout * 2);
             // If remainder is divisible by two, trigger event that remainder exists & is claimable
-            if (SafeMath.mod(remainder, 2) == 0) { emit LogRemainderClaimable(remainder, true); }
+            if (remainder.mod(2) == 0) { emit LogRemainderClaimable(remainder, true); }
             
         }
         balanceOf[bob] += payout;
@@ -136,7 +139,7 @@ contract Splitter {
         returns (bool success)
     {
         // Split existing remainder in two
-        uint evenPayout = SafeMath.div(remainder, 2);
+        uint evenPayout = remainder.div(2);
         // Set remainder to 0;
         remainder = 0;
         // update carols and bobs balance
