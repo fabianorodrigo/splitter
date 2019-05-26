@@ -97,7 +97,7 @@ contract Splitter  {
         uint payout = msg.value.div(2);
         // Check if remainer exists, if yes update remainder
         if (msg.value > payout * 2) {
-            remainder += msg.value - (payout * 2);
+            remainder = remainder.add(msg.value - (payout * 2));
             // If remainder is divisible by two, trigger event that remainder exists & is claimable
             if (remainder.mod(2) == 0) { emit LogRemainderClaimable(remainder, true); }
             
