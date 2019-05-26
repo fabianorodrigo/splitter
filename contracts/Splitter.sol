@@ -117,21 +117,10 @@ contract Splitter  {
         sufficientBalance
         returns (bool success)
     {
-        if (msg.sender == bob) 
-        {
-            bob.transfer(balanceOf[bob]);
-            balanceOf[bob] = 0;
-            return true;
-        } 
-        else if (msg.sender == carol) 
-        {
-            carol.transfer(balanceOf[carol]);
-            balanceOf[carol] = 0;
-            return true;
-        }
-        else {
-            revert("Withdraw failed");
-        }
+        uint withdrawAmount = balanceOf[msg.sender];
+        balanceOf[msg.sender] = 0;
+        msg.sender.transfer(withdrawAmount);
+        return true;    
     }
     
 }
