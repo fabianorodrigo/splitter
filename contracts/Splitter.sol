@@ -21,9 +21,9 @@ contract Splitter  {
     // Get Alice address
     address public alice;
     // Get Bobs Balance
-    address payable public bob;
+    address public bob;
     // Get Carols Balance
-    address payable public carol;
+    address public carol;
     // Remainder balance for updating potential claims for carol and bob
     uint remainder;
 
