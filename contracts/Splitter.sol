@@ -1,15 +1,14 @@
 pragma solidity >=0.4.21 <0.6.0;
 
 import './SafeMath.sol';
-
+import './Stoppable.sol';
 
 /// @title Splitter - Split payments to two parties 50/50
 /// @author hilmarx
 /// @notice You can use this contract to split up payments equally among two pre-defined parties
 /// @dev This is a test version, please don't use in production
 
-contract Splitter  {
-
+contract Splitter is Stoppable  {
 
     using SafeMath for uint256;
 
@@ -18,8 +17,6 @@ contract Splitter  {
     // balance of alice, bob & carol
     mapping (address => uint) public balanceOf;
 
-    // Get Alice address
-    address public alice;
     // Get Bobs Balance
     address public bob;
     // Get Carols Balance
@@ -38,11 +35,6 @@ contract Splitter  {
     event LogBalanceWithdrawn(address indexed withdrawer, uint indexed amount);
 
     // Modifiers
-    ///@dev Check if message sender is Alice
-    modifier isAlice() {
-        require(alice == msg.sender, "not owner");
-        _;
-    }
     
     ///@dev Check if message sender is either Bob or Carol
     modifier isBobOrCarol() {
@@ -64,7 +56,7 @@ contract Splitter  {
     
     //@dev Constructor setting addresses & balances of Alice, Bob & Carol, where alice is the owner
     constructor(address payable bobAddress, address payable carolAddress) public {
-        alice = msg.sender;
+        // alice = owner();
         bob = bobAddress;
         balanceOf[bob];
         carol = carolAddress;
@@ -78,7 +70,7 @@ contract Splitter  {
     ///@dev If the ether stored in the remainder state variable is again divisible by 2, emit an event
     function splitEther() 
         public
-        isAlice
+        onlyOwner
         nonZero
         payable
     {       
