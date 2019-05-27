@@ -72,6 +72,7 @@ contract Splitter is Stoppable  {
         public
         onlyOwner
         nonZero
+        onlyIfRunning
         payable
     {       
         uint payout = msg.value.div(2);
@@ -103,6 +104,7 @@ contract Splitter is Stoppable  {
         public
         isBobOrCarol
         sufficientBalance
+        onlyIfRunning
         returns (bool success)
     {
         uint withdrawAmount = balanceOf[msg.sender];
