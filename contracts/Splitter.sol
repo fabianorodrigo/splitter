@@ -57,6 +57,8 @@ contract Splitter is Stoppable  {
     //@dev Constructor setting addresses & balances of Alice, Bob & Carol, where alice is the owner
     constructor(address payable bobAddress, address payable carolAddress) public {
         // alice = owner();
+        // check if addresses are not zero-adresses
+        require( bobAddress != address(0) && carolAddress != address(0) );
         bob = bobAddress;
         balanceOf[bob];
         carol = carolAddress;
