@@ -60,9 +60,7 @@ contract Splitter is Stoppable  {
         // check if addresses are not zero-adresses
         require( bobAddress != address(0) && carolAddress != address(0) );
         bob = bobAddress;
-        balanceOf[bob];
         carol = carolAddress;
-        balanceOf[carol];
     }
 
     // Setter Functions

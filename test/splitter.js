@@ -2,6 +2,11 @@ const Splitter = artifacts.require('Splitter');
 const SafeMath = artifacts.require('SafeMath')
 
 contract('Splitter', (accounts) => {
+    describe('beforeTest', () => {
+        beforeEach('should run before each it() in the scope', () => {
+            const splitter = await Splitter.new(account2, account3, {from: account1});
+        })
+    })
     it('balance of contract after sending 1 eth to split function should equal msg.value', async () => {
         // Set up 3 test accounts
         let account1 = accounts[0];
