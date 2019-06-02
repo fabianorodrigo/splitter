@@ -79,8 +79,10 @@ contract Splitter is Stoppable  {
         // Check if remainer exists, if yes update remainder
         if (msg.value > payout * 2) {
             remainder = remainder.add(msg.value - (payout * 2));
+            // Set newRemainder to avoid double SLOADing
+            uint newRemainder = remainder;
             // If remainder is greater than 0 & divisible by two, trigger event and update carols and bobs balanceOf
-            if (remainder > 0 && remainder.mod(2) == 0) 
+            if (newRemainder > 0 && newRemainder.mod(2) == 0) 
             {
                 // Split existing remainder in two
                 uint evenPayout = remainder.div(2);
