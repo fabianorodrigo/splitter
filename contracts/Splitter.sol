@@ -75,27 +75,46 @@ contract Splitter is Stoppable  {
         onlyIfRunning
         payable
     {       
+        
+        // Divide Ether sent by Alice into two equal payouts
         uint payout = msg.value.div(2);
+
+        // Store balance uint of carol in memory
+        uint carolNewBalance = balanceOf[carol];
+
+        // Store balance uint of bob in memory
+        uint bobNewBalance = balanceOf[bob];
+
         // Check if remainer exists, if yes update remainder
         if (msg.value > payout * 2) {
-            remainder = remainder.add(msg.value - (payout * 2));
-            // Set newRemainder to avoid double SLOADing
+            // Store remainder uint in memory
             uint newRemainder = remainder;
+
+            // Update remainder
+            newRemainder = newRemainder.add(msg.value - (payout * 2));
+            
             // If remainder is greater than 0 & divisible by two, trigger event and update carols and bobs balanceOf
             if (newRemainder > 0 && newRemainder.mod(2) == 0) 
             {
                 // Split existing remainder in two
-                uint evenPayout = remainder.div(2);
-                // Set remainder to 0;
-                remainder = 0;
+                uint evenPayout = newRemainder.div(2);
+
                 // update carols and bobs balance
-                balanceOf[carol] = balanceOf[carol].add(evenPayout);
-                balanceOf[bob] = balanceOf[bob].add(evenPayout);
-                emit LogRemainderClaimed(remainder, true);
-            }  
+                carolNewBalance = carolNewBalance.add(evenPayout);
+                bobNewBalance = bobNewBalance.add(evenPayout);
+
+                emit LogRemainderClaimed(newRemainder, true);
+
+                // Set remainder to 0;
+                newRemainder = 0;
+            }
+            // SSTORE new remainder
+            remainder = newRemainder;
         }
-        balanceOf[carol] = balanceOf[carol].add(payout);
-        balanceOf[bob] = balanceOf[bob].add(payout);
+        // SSTORE updated balance of Carol
+        balanceOf[carol] = carolNewBalance.add(payout);
+        // SSTORE updated balance of bob
+        balanceOf[bob] = bobNewBalance.add(payout);
 
         // Emit event that ether was succesfully splitted amoung bob & carol
         emit LogSplit(msg.value);
