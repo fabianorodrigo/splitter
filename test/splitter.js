@@ -8,7 +8,6 @@ contract('Splitter', (accounts) => {
         let account2 = accounts[1];
         let account3 = accounts[2];
 
-        const safemath = await SafeMath.deployed();
         const splitter = await Splitter.deployed(account2, account3, {from: account1});
 
         const messageValue = await splitter.splitEther( {from: account1, value: web3.utils.toWei("1")} );
