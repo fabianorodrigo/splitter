@@ -17,12 +17,8 @@ contract Splitter is Stoppable  {
     // balance of alice, bob & carol
     mapping (address => uint) public balanceOf;
 
-    // Get Bobs Balance
-    address public bob;
-    // Get Carols Balance
-    address public carol;
-    // Remainder balance for updating potential claims for carol and bob
-    uint remainder;
+    // mapping to find respective remainders for splitting pairs with their hashes
+    mapping (bytes32 => uint) remainderPair; 
 
     // Events
     // Show that the remainder was distributed to the two accounts
@@ -35,12 +31,6 @@ contract Splitter is Stoppable  {
     event LogBalanceWithdrawn(address indexed withdrawer, uint indexed amount);
 
     // Modifiers
-    
-    ///@dev Check if message sender is either Bob or Carol
-    modifier isBobOrCarol() {
-        require(msg.sender == bob || msg.sender == carol, "You don't have the necessary permission to call this function");
-        _;
-    }
     
     ///@dev Check if message sender (Bob or Carol) have any balance which can be withdrawn
     modifier sufficientBalance() {
@@ -55,40 +45,42 @@ contract Splitter is Stoppable  {
     }
     
     //@dev Constructor setting addresses & balances of Alice, Bob & Carol, where alice is the owner
-    constructor(address payable bobAddress, address payable carolAddress) public {
+    constructor() public {
         // alice = owner();
-        // check if addresses are not zero-adresses
-        require( bobAddress != address(0) && carolAddress != address(0) );
-        bob = bobAddress;
-        carol = carolAddress;
     }
 
     // Setter Functions
 
-    ///@dev Split ether sent by Alice into two equal pices and add them to Carols and Bobs inherent balance, equally.
-    ///@dev If ether amount cannot be divided by two, store remainder in the 'remainder' state variable
+    ///@dev Split ether sent by Alice into two equal pices and add them to receiver1s & receiver2s balance, equally.
+    ///@dev If ether amount cannot be divided by two, store remainder in the 'remainder' state variable which is mapped to each unqiue splitting pair
     ///@dev If the ether stored in the remainder state variable is again divisible by 2, emit an event
-    function splitEther() 
+    function splitEther(address receiver1, address receiver2) 
         public
         onlyOwner
         nonZero
         onlyIfRunning
         payable
     {       
-        
+        // Require both address to not be 0;
+        require( receiver1 != address(0) && receiver2 != address(0) );
+
+        // Store balance uint of carol in memory
+        uint receiver1NewBalance = balanceOf[receiver1];
+
+        // Store balance uint of bob in memory
+        uint receiver2NewBalance = balanceOf[receiver2];
+
         // Divide Ether sent by Alice into two equal payouts
         uint payout = msg.value.div(2);
 
-        // Store balance uint of carol in memory
-        uint carolNewBalance = balanceOf[carol];
-
-        // Store balance uint of bob in memory
-        uint bobNewBalance = balanceOf[bob];
-
         // Check if remainer exists, if yes update remainder
         if (msg.value > payout * 2) {
-            // Store remainder uint in memory
-            uint newRemainder = remainder;
+
+            // Find pairHash of splitting Pair
+            bytes32 pairHash = createPairHash(receiver1, receiver2);
+
+            // Find remainder of splitting pair
+            uint newRemainder = remainderPair[pairHash];
 
             // Update remainder
             newRemainder = newRemainder.add(msg.value - (payout * 2));
@@ -100,8 +92,8 @@ contract Splitter is Stoppable  {
                 uint evenPayout = newRemainder.div(2);
 
                 // update carols and bobs balance
-                carolNewBalance = carolNewBalance.add(evenPayout);
-                bobNewBalance = bobNewBalance.add(evenPayout);
+                receiver1NewBalance = receiver1NewBalance.add(evenPayout);
+                receiver2NewBalance = receiver2NewBalance.add(evenPayout);
 
                 emit LogRemainderClaimed(newRemainder, true);
 
@@ -109,12 +101,12 @@ contract Splitter is Stoppable  {
                 newRemainder = 0;
             }
             // SSTORE new remainder
-            remainder = newRemainder;
+            remainderPair[pairHash] = newRemainder;
         }
         // SSTORE updated balance of Carol
-        balanceOf[carol] = carolNewBalance.add(payout);
+        balanceOf[receiver1] = receiver1NewBalance.add(payout);
         // SSTORE updated balance of bob
-        balanceOf[bob] = bobNewBalance.add(payout);
+        balanceOf[receiver2] = receiver2NewBalance.add(payout);
 
         // Emit event that ether was succesfully splitted amoung bob & carol
         emit LogSplit(msg.value);
@@ -123,7 +115,6 @@ contract Splitter is Stoppable  {
     ///@dev Enable Bob & Carol to withdraw the value of their contracts balance
     function withdraw() 
         public
-        isBobOrCarol
         sufficientBalance
         onlyIfRunning
         returns (bool success)
@@ -135,5 +126,18 @@ contract Splitter is Stoppable  {
         msg.sender.transfer(withdrawAmount);
         return true;
     }
-    
+
+    function createPairHash(address receiver1, address receiver2) 
+        internal 
+        pure 
+        returns (bytes32 resultedPairHash) 
+    {
+        bytes32 pairHash;
+        if (receiver1 > receiver2) {
+            pairHash = keccak256(abi.encodePacked(receiver1, receiver2));
+        } else {
+            pairHash = keccak256(abi.encodePacked(receiver2, receiver1));
+        }
+        return pairHash;
+    }
 }
