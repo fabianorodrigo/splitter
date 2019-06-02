@@ -1,24 +1,40 @@
 const Splitter = artifacts.require('Splitter');
-const SafeMath = artifacts.require('SafeMath')
+// const BigNumber = require('bignumber.js');
+
+// Tests
+
+// Check if two split function calls with uneven amounts split funds equally
+
+// Check if with 3 receivers, 1 receiver has two different remainders he can withdraw after 2 unequal splits have been conducted
+
+// Check if withdraw function works as intended
 
 contract('Splitter', (accounts) => {
-    describe('beforeTest', () => {
-        beforeEach('should run before each it() in the scope', () => {
-            const splitter = await Splitter.new(account2, account3, {from: account1});
-        })
-    })
-    it('balance of contract after sending 1 eth to split function should equal msg.value', async () => {
-        // Set up 3 test accounts
-        let account1 = accounts[0];
-        let account2 = accounts[1];
-        let account3 = accounts[2];
 
-        const splitter = await Splitter.deployed(account2, account3, {from: account1});
+    // Set test users
+    var sender1 = accounts[0];
+    var sender2 = accounts[1]
+    var receiver1 = accounts[2];
+    var receiver2 = accounts[3];
+    var receiver3 = accounts[4];
 
-        const messageValue = await splitter.splitEther( {from: account1, value: web3.utils.toWei("1")} );
 
-        const contractBalance = await splitter.getContractBalance();
+    beforeEach('should run before each it() in the scope', async () => {
+        const splitter = await Splitter.new({from: sender1});
+    });
+    
+    // Check if Split function of an even number splits amount equally
+    it('sender1 sending an even number should result in receivers balance updating equally 50/50', async () => {
+        const splitter = await Splitter.new({from: sender1});
+        let amount = 1000;
+        let expectedBalance = 500;
+        
+        // Call splitEther function in contract
+        txReceipt = await splitter.splitEther(receiver1, receiver2, {from: sender1, value: amount} )
 
-        assert.equal(web3.utils.toWei("1"), contractBalance, "Value of message sent should be equal to the contracts balance");
+        // query balance within contract of receiver1
+        balanceReceiver1 = await splitter.balanceOf(receiver1);
+
+        assert.equal(expectedBalance, balanceReceiver1, "Balance must be 500wei");
     })
 })
