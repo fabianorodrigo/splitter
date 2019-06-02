@@ -18,7 +18,7 @@ contract Splitter is Stoppable  {
     mapping (address => uint) public balanceOf;
 
     // mapping to find respective remainders for splitting pairs with their hashes
-    mapping (bytes32 => uint) remainderPair; 
+    mapping (bytes32 => uint) public remainderPair; 
 
     // Events
     // Show that the remainder was distributed to the two accounts
