@@ -74,7 +74,7 @@ contract Splitter is Stoppable  {
         uint payout = msg.value.div(2);
 
         // Check if remainer exists, if yes update remainder
-        if (msg.value > payout * 2) {
+        if (msg.value > payout.mul(2)) {
 
             // Find pairHash of splitting Pair
             bytes32 pairHash = createPairHash(receiver1, receiver2);
@@ -83,7 +83,7 @@ contract Splitter is Stoppable  {
             uint newRemainder = remainderPair[pairHash];
 
             // Update remainder
-            newRemainder = newRemainder.add(msg.value - (payout * 2));
+            newRemainder = newRemainder.add(msg.value - payout.mul(2));
             
             // If remainder is greater than 0 & divisible by two, trigger event and update carols and bobs balanceOf
             if (newRemainder > 0 && newRemainder.mod(2) == 0) 
