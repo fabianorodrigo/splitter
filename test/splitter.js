@@ -40,7 +40,7 @@ contract('Splitter', (accounts) => {
 
         const balanceReceiver1 = await splitter.balanceOf(receiver1);
 
-        assert.strictEqual(expectedBalance, balanceReceiver1)
+        assert.strictEqual(expectedBalance, balanceReceiver1.toNumber())
     })
 
     // Check if with 3 receivers, 1 receiver has two different remainders he can withdraw after 2 unequal splits have been conducted
@@ -61,14 +61,30 @@ contract('Splitter', (accounts) => {
     it('withdraw func works', async() => {
         let amount = 10000000000000000000; 
 
-        await splitter.splitEther(receiver1, receiver2, {from: sender1, value: amount} );
+        const txReceipt1 = await splitter.splitEther(receiver1, receiver2, {from: sender1, value: amount} );
 
         const receiver1BalanceBefore = await web3.eth.getBalance(receiver1);
 
-        await splitter.withdraw( {from:receiver1} )
+        const txReceipt2 = await splitter.withdraw( {from:receiver1} );
+
+        const tx2 = await web3.eth.getTransaction(txReceipt2.tx);
+
+
+        const gasCost2 = tx2.gasPrice * txReceipt2.receipt.gasUsed;
+
 
         const receiver1BalanceAfter = await web3.eth.getBalance(receiver1);
 
-        assert.isAbove(parseInt(receiver1BalanceAfter), parseInt(receiver1BalanceBefore));
+        console.log(receiver1BalanceAfter);
+        console.log(parseInt(receiver1BalanceAfter));
+        console.log(gasCost2);
+        console.log(10000000000000000000/2);
+
+        const realBalanceAfter =  parseInt(receiver1BalanceAfter) + gasCost2 - (10000000000000000000/2);
+
+        console.log(receiver1BalanceBefore);
+        console.log(realBalanceAfter);
+
+        assert.equal(parseInt(receiver1BalanceBefore), realBalanceAfter);
     })
 })
