@@ -7,6 +7,7 @@ contract('Splitter', (accounts) => {
 
     // Set test users
     const [sender1, sender2 ,receiver1, receiver2, receiver3] = accounts;
+    let splitter;
 
 
     beforeEach(async () =>  {
