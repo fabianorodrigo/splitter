@@ -51,7 +51,7 @@ contract Splitter is Stoppable  {
 
     // Setter Functions
 
-    ///@dev Split ether sent by Alice into two equal pices and add them to receiver1s & receiver2s balance, equally.
+    ///@dev Split ether sent by Alice into two equal pieces and add them to receiver1s & receiver2s balance, equally.
     ///@dev If ether amount cannot be divided by two, store remainder in the 'remainder' state variable which is mapped to each unqiue splitting pair
     ///@dev If the ether stored in the remainder state variable is again divisible by 2, emit an event
     function splitEther(address receiver1, address receiver2) 

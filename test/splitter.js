@@ -6,11 +6,7 @@ const Splitter = artifacts.require('Splitter');
 contract('Splitter', (accounts) => {
 
     // Set test users
-    var sender1 = accounts[0];
-    var sender2 = accounts[1]
-    var receiver1 = accounts[2];
-    var receiver2 = accounts[3];
-    var receiver3 = accounts[4];
+    const [sender1, sender2 ,receiver1, receiver2, receiver3] = accounts;
 
 
     beforeEach(async () =>  {
@@ -24,10 +20,10 @@ contract('Splitter', (accounts) => {
         let expectedBalance = 500;
         
         // Call splitEther function in contract
-        txReceipt = await splitter.splitEther(receiver1, receiver2, {from: sender1, value: amount} )
+        const txReceipt = await splitter.splitEther(receiver1, receiver2, {from: sender1, value: amount} )
 
         // query balance within contract of receiver1
-        balanceReceiver1 = await splitter.balanceOf(receiver1);
+        const balanceReceiver1 = await splitter.balanceOf(receiver1);
 
         assert.equal(expectedBalance, balanceReceiver1, "Balance must be 500wei");
     })
@@ -41,9 +37,9 @@ contract('Splitter', (accounts) => {
         await splitter.splitEther(receiver1, receiver2, {from: sender1, value: amount} )
         await splitter.splitEther(receiver1, receiver2, {from: sender1, value: amount} )
 
-        balanceReceiver1 = await splitter.balanceOf(receiver1);
+        const balanceReceiver1 = await splitter.balanceOf(receiver1);
 
-        assert.equal(expectedBalance, balanceReceiver1)
+        assert.strictEqual(expectedBalance, balanceReceiver1)
     })
 
     // Check if with 3 receivers, 1 receiver has two different remainders he can withdraw after 2 unequal splits have been conducted
@@ -56,7 +52,7 @@ contract('Splitter', (accounts) => {
         await splitter.splitEther(receiver1, receiver2, {from: sender1, value: amount} );
         await splitter.splitEther(receiver1, receiver3, {from: sender1, value: amount} );
 
-        balanceReceiver1 = await splitter.balanceOf(receiver1);
+        const balanceReceiver1 = await splitter.balanceOf(receiver1);
 
         assert.equal(balanceReceiver1, endBalance);
     })
